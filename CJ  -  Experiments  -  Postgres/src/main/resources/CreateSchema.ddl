@@ -40,3 +40,18 @@ CREATE TABLE msgdeals
         ON UPDATE RESTRICT
         ON DELETE RESTRICT
 );
+
+CREATE TABLE msgcontracts
+(
+    id_ bigint NOT NULL,
+    contract_id bigint NOT NULL,
+    PRIMARY KEY (id_),
+    CONSTRAINT fk_msg_id FOREIGN KEY (id_)
+        REFERENCES messages (id) MATCH SIMPLE
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
+    CONSTRAINT fk_msg_contract FOREIGN KEY (contract_id)
+        REFERENCES contracts (id) MATCH SIMPLE
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
+);
