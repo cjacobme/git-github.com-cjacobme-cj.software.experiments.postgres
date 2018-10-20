@@ -1,13 +1,71 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>cj.software</groupId>
-    <artifactId>parent</artifactId>
-    <version>1-SNAPSHOT</version>
-  </parent>
-  <groupId>cj.software.experiments</groupId>
-  <artifactId>postgres</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>CJ  -  Experiments  -  Postgres</name>
-  <description>Several experiments around PostgreSQL	</description>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>cj.software</groupId>
+		<artifactId>parent</artifactId>
+		<version>1-SNAPSHOT</version>
+	</parent>
+
+	<groupId>cj.software.experiments</groupId>
+	<artifactId>postgres</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<name>CJ  -  Experiments  -  Postgres</name>
+	<description>Several experiments around PostgreSQL	</description>
+
+	<properties>
+		<slf4j.version>1.7.25</slf4j.version>
+		<log4j.version>1.2.17</log4j.version>
+		<postgresql.version>42.2.5</postgresql.version>
+		<pg-embedded.version>0.12.0</pg-embedded.version>
+		<junit.version>4.12</junit.version>
+		<assert-j.version>3.9.1</assert-j.version>
+		<mockito.version>2.15.0</mockito.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${postgresql.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.opentable.components</groupId>
+			<artifactId>otj-pg-embedded</artifactId>
+			<version>${pg-embedded.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>${assert-j.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>${mockito.version}</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
 </project>
