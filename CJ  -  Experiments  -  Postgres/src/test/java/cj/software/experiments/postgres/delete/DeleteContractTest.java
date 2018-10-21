@@ -84,9 +84,10 @@ public class DeleteContractTest
 		{
 			this.assertCounts(lConnection, 2, 0, 0, 0, 0);
 			ContractDeleter lContractDeleter = new ContractDeleter();
-			lContractDeleter.delete(lConnection, 1);
+			long lDelete = lContractDeleter.delete(lConnection, 31);
+			assertThat(lDelete).as("number of rows").isEqualTo(1l);
 			this.assertCounts(lConnection, 1, 0, 0, 0, 0);
-			lContractDeleter.delete(lConnection, 2);
+			lContractDeleter.delete(lConnection, 32);
 			this.assertCounts(lConnection, 0, 0, 0, 0, 0);
 		}
 	}

@@ -7,13 +7,15 @@ import java.sql.Types;
 
 public class ContractDeleter
 {
-	public void delete(Connection pConnection, long pContractId) throws SQLException
+	public long delete(Connection pConnection, long pContractId) throws SQLException
 	{
 		try (CallableStatement lStmt = pConnection.prepareCall("{ ? = call delete_contract( ? ) }"))
 		{
 			lStmt.registerOutParameter(1, Types.BIGINT);
 			lStmt.setLong(2, pContractId);
 			lStmt.execute();
+			long lResult = lStmt.getLong(1);
+			return lResult;
 		}
 	}
 }
