@@ -70,20 +70,22 @@ public class DeleteContractTest
 	@Test
 	public void deleteSingleContract() throws SQLException, URISyntaxException, IOException
 	{
+		DataSource lDataSource = pg.getEmbeddedPostgres().getPostgresDatabase();
 		this.statementsLoader.loadStatements(
-				pg.getEmbeddedPostgres().getPostgresDatabase(),
+				lDataSource,
 				DeleteContractTest.class,
 				"/CreateSchema.ddl",
 				"/InsertContracts.sql");
-		try (Connection lConnection = pg
-				.getEmbeddedPostgres()
-				.getPostgresDatabase()
-				.getConnection())
+		this.statementsLoader.loadComplete(
+				lDataSource,
+				DeleteContractTest.class,
+				"/CreateFunction.sql");
+		try (Connection lConnection = lDataSource.getConnection())
 		{
 			this.assertCounts(lConnection, 2, 0, 0, 0, 0);
 			ContractDeleter lContractDeleter = new ContractDeleter();
 			lContractDeleter.delete(lConnection, 1);
-			this.assertCounts(lConnection, 0, 0, 0, 0, 0);
+			this.assertCounts(lConnection, 1, 0, 0, 0, 0);
 			lContractDeleter.delete(lConnection, 2);
 			this.assertCounts(lConnection, 0, 0, 0, 0, 0);
 		}
@@ -99,33 +101,22 @@ public class DeleteContractTest
 	{
 		try (Statement lStmt = pConnection.createStatement())
 		{
-			try (ResultSet lRS = lStmt.executeQuery("select count(*) from contracts"))
-			{
-				this.assertCount(lRS, pExpectedContracts, "contracts");
-			}
-			try (ResultSet lRS = lStmt.executeQuery("select count(*) from deals"))
-			{
-				this.assertCount(lRS, pExpectedDeals, "Deals");
-			}
-			try (ResultSet lRS = lStmt.executeQuery("select count(*) from messages"))
-			{
-				this.assertCount(lRS, pExpectedMsgs, "messages");
-			}
-			try (ResultSet lRS = lStmt.executeQuery("select count(*) from msgcontracts"))
-			{
-				this.assertCount(lRS, pExpectedDeals, "messages for contracts");
-			}
-			try (ResultSet lRS = lStmt.executeQuery("select count(*) from msgdeals"))
-			{
-				this.assertCount(lRS, pExpectedDeals, "messages for deals");
-			}
+			this.assertCount(lStmt, "contracts", pExpectedContracts);
+			this.assertCount(lStmt, "deals", pExpectedDeals);
+			this.assertCount(lStmt, "messages", pExpectedMsgs);
+			this.assertCount(lStmt, "msgcontracts", pExpectedMsgsForContracts);
+			this.assertCount(lStmt, "msgdeals", pExpectedMsgsForDeals);
 		}
 	}
 
-	private void assertCount(ResultSet pRS, long pExpected, String pName) throws SQLException
+	private void assertCount(Statement pStmt, String pTableName, long pExcpectedCount)
+			throws SQLException
 	{
-		assertThat(pRS.next()).as("resultset next").isTrue();
-		long lActual = pRS.getLong(1);
-		assertThat(lActual).as("number of rows in %s", pName).isEqualTo(pExpected);
+		try (ResultSet lRS = pStmt.executeQuery("select count(*) from " + pTableName))
+		{
+			assertThat(lRS.next()).as("next for %s", pTableName).isTrue();
+			long lActual = lRS.getLong(1);
+			assertThat(lActual).as("number of rows in %s", pTableName).isEqualTo(pExcpectedCount);
+		}
 	}
 }

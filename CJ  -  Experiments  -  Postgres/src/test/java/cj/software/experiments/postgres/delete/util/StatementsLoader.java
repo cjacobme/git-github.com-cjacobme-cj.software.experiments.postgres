@@ -53,7 +53,7 @@ public class StatementsLoader
 			Files.lines(lPath).forEach(pLine ->
 			{
 				lSB.append(pLine).append(System.lineSeparator());
-				if (pLine.endsWith(";"))
+				if (pLine.endsWith(");") || pLine.endsWith("$BODY$;"))
 				{
 					String lToBeExecuted = lSB.toString();
 					try
@@ -68,6 +68,49 @@ public class StatementsLoader
 				}
 			});
 		}
-
 	}
+
+	/**
+	 * lädt den Inhalt einer Datei in einem Block. Damit kann man z.B. eine PGSQL-Funktion
+	 * einführen.
+	 * 
+	 * @param pDataSource
+	 *            Datenquelle
+	 * @param pClass
+	 *            Java-Klasse zur Suche im classpath
+	 * @param pFileName
+	 *            Name der zu importierenden Datei
+	 * @throws SQLException
+	 *             Fehler beim Datenbank-Zugriff
+	 * @throws URISyntaxException
+	 *             Fehler bei der Zusammensetzung des Dateinamens.
+	 * @throws IOException
+	 *             Fehler beim Zugriff auf die Datei
+	 */
+	public void loadComplete(DataSource pDataSource, Class<?> pClass, String pFileName)
+			throws SQLException,
+			URISyntaxException,
+			IOException
+	{
+		try (Connection lConnection = pDataSource.getConnection())
+		{
+			this.loadComplete(lConnection, pClass, pFileName);
+		}
+	}
+
+	private void loadComplete(Connection pConnection, Class<?> pClass, String pFileName)
+			throws URISyntaxException,
+			IOException,
+			SQLException
+	{
+		this.logger.info(String.format("load complete %s...", pFileName));
+		URI lURI = pClass.getResource(pFileName).toURI();
+		Path lPath = Paths.get(lURI);
+		String lContent = new String(Files.readAllBytes(lPath));
+		try (Statement lStmt = pConnection.createStatement())
+		{
+			lStmt.execute(lContent);
+		}
+	}
+
 }
