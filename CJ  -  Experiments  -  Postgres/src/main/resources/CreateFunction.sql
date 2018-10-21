@@ -5,6 +5,19 @@ DECLARE
 BEGIN
 	result := 0;
 	
+	create temp table delmsgcontracts (id bigint, primary key (id));
+	
+	INSERT INTO delmsgcontracts select (id_) from msgcontracts  WHERE contract_id = contract_id_;
+	
+	DELETE FROM msgcontracts WHERE contract_id = contract_id_;
+	GET DIAGNOSTICS number_rows = ROW_COUNT;
+	result := result + number_rows;
+	
+	DELETE from messages where id in (select id from delmsgcontracts);
+	GET DIAGNOSTICS number_rows = ROW_COUNT;
+	result := result + number_rows;
+	DROP TABLE delmsgcontracts;
+	
 	DELETE FROM deals WHERE deals.contract_id = contract_id_;
 	GET DIAGNOSTICS number_rows = ROW_COUNT;
 	result := result + number_rows;
