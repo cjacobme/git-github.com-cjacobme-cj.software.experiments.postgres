@@ -180,6 +180,34 @@ public class DeleteContractTest
 		}
 	}
 
+	@Test
+	public void illegalArgument() throws SQLException, URISyntaxException, IOException
+	{
+		DataSource lDataSource = pg.getEmbeddedPostgres().getPostgresDatabase();
+		this.statementsLoader.loadStatements(
+				lDataSource,
+				DeleteContractTest.class,
+				"/CreateSchema.ddl",
+				"/InsertContracts.sql",
+				"/InsertDeals.sql",
+				"/InsertMsgContracts.sql",
+				"/InsertMsgDeals.sql");
+		this.statementsLoader.loadComplete(
+				lDataSource,
+				DeleteContractTest.class,
+				"/CreateFunction.sql");
+		try (Connection lConnection = lDataSource.getConnection())
+		{
+			this.assertCounts(lConnection, 2, 9, 7, 3, 4);
+
+			ContractDeleter lDeleter = new ContractDeleter();
+
+			long lDeleted = lDeleter.delete(lConnection, -31);
+			assertThat(lDeleted).as("number of deleted rows").isEqualTo(0);
+			this.assertCounts(lConnection, 2, 9, 7, 3, 4);
+		}
+	}
+
 	private void assertCounts(
 			Connection pConnection,
 			long pExpectedContracts,
