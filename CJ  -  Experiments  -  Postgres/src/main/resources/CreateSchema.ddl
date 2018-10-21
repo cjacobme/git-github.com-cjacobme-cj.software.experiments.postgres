@@ -1,3 +1,9 @@
+DROP TABLE IF EXISTS msgcontracts;
+DROP TABLE IF EXISTS msgdeals;
+DROP TABLE IF EXISTS deals;
+DROP TABLE IF EXISTS messages;
+DROP TABLE IF EXISTS contracts;
+
 CREATE TABLE contracts
 (
     id bigint NOT NULL,

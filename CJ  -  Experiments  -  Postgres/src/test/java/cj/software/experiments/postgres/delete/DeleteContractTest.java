@@ -58,7 +58,7 @@ public class DeleteContractTest
 
 	/**
 	 * erster Schritt: wir können einen einzelnen Contract löschen, der ohne jede Beziehung zu
-	 * weiteren
+	 * weiteren Objekten steht
 	 * 
 	 * @throws SQLException
 	 *             Fehler bei SQL-Zugriff
@@ -88,6 +88,33 @@ public class DeleteContractTest
 			assertThat(lDelete).as("number of rows").isEqualTo(1l);
 			this.assertCounts(lConnection, 1, 0, 0, 0, 0);
 			lContractDeleter.delete(lConnection, 32);
+			this.assertCounts(lConnection, 0, 0, 0, 0, 0);
+		}
+	}
+
+	@Test
+	public void deleteContractsAndDeals() throws SQLException, URISyntaxException, IOException
+	{
+		DataSource lDataSource = pg.getEmbeddedPostgres().getPostgresDatabase();
+		this.statementsLoader.loadStatements(
+				lDataSource,
+				DeleteContractTest.class,
+				"/CreateSchema.ddl",
+				"/InsertContracts.sql",
+				"/InsertDeals.sql");
+		this.statementsLoader.loadComplete(
+				lDataSource,
+				DeleteContractTest.class,
+				"/CreateFunction.sql");
+		try (Connection lConnection = lDataSource.getConnection())
+		{
+			this.assertCounts(lConnection, 2, 9, 0, 0, 0);
+			ContractDeleter lDeleter = new ContractDeleter();
+			long lDeleted = lDeleter.delete(lConnection, 32);
+			assertThat(lDeleted).as("number of deleted rows").isEqualTo(6);
+			this.assertCounts(lConnection, 1, 4, 0, 0, 0);
+			lDeleted = lDeleter.delete(lConnection, 31);
+			assertThat(lDeleted).as("number of deleted rows").isEqualTo(5);
 			this.assertCounts(lConnection, 0, 0, 0, 0, 0);
 		}
 	}

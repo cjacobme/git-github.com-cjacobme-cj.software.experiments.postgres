@@ -53,7 +53,7 @@ public class StatementsLoader
 			Files.lines(lPath).forEach(pLine ->
 			{
 				lSB.append(pLine).append(System.lineSeparator());
-				if (pLine.endsWith(");") || pLine.endsWith("$BODY$;"))
+				if (pLine.endsWith(";"))
 				{
 					String lToBeExecuted = lSB.toString();
 					try
