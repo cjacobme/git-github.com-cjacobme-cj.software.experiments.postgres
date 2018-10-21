@@ -148,6 +148,38 @@ public class DeleteContractTest
 		}
 	}
 
+	@Test
+	public void fullObjectGraph() throws SQLException, URISyntaxException, IOException
+	{
+		DataSource lDataSource = pg.getEmbeddedPostgres().getPostgresDatabase();
+		this.statementsLoader.loadStatements(
+				lDataSource,
+				DeleteContractTest.class,
+				"/CreateSchema.ddl",
+				"/InsertContracts.sql",
+				"/InsertDeals.sql",
+				"/InsertMsgContracts.sql",
+				"/InsertMsgDeals.sql");
+		this.statementsLoader.loadComplete(
+				lDataSource,
+				DeleteContractTest.class,
+				"/CreateFunction.sql");
+		try (Connection lConnection = lDataSource.getConnection())
+		{
+			this.assertCounts(lConnection, 2, 9, 7, 3, 4);
+
+			ContractDeleter lDeleter = new ContractDeleter();
+
+			long lDeleted = lDeleter.delete(lConnection, 31);
+			assertThat(lDeleted).as("number of deleted rows").isEqualTo(11);
+			this.assertCounts(lConnection, 1, 5, 3, 1, 2);
+
+			lDeleted = lDeleter.delete(lConnection, 32);
+			assertThat(lDeleted).as("number of deleted rows").isEqualTo(10);
+			this.assertCounts(lConnection, 0, 0, 0, 0, 0);
+		}
+	}
+
 	private void assertCounts(
 			Connection pConnection,
 			long pExpectedContracts,
